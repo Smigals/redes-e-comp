@@ -87,7 +87,74 @@ int main(int argc, char** argv)
     /*testing*/    
 
     printf("\n%d bytes written\n", res);
-
+  //while (state!=STOP) {       /* loop for input */
+      // unsigned char buf[1];
+       //res = read(fd,buf,1);   /* returns after 5 chars have been input */
+       // buf[res]=0;               /* so we can printf... */
+       /*printf("%02X \n", buf[0]);
+        
+       switch(state){
+            case START:
+                if (buf[0] == F){
+                    state=FLAG_RCV;
+                    printf("flag_rcv\n");
+                }
+                else {
+                    state=START;
+                    printf("start\n");
+                } break;
+            case FLAG_RCV:
+                if (buf[0] == A){
+                    state=A_RCV; 
+                    printf("a_rcv\n") ;      
+                }
+                else if(buf[0]==F){
+                    state=FLAG_RCV;
+                    printf("flag go back\n");
+                }
+                else {
+                    state=START;
+                    printf("start\n");
+                } break;
+            case A_RCV:
+                if (buf[0]==C){
+                    state=C_RCV;
+                    printf("c_rcv\n");
+                }
+                else if(buf[0]==F){
+                    state=FLAG_RCV;
+                    printf("a go back\n");
+                }
+                else {
+                    state=START;
+                    printf("start\n");
+                } break;
+            case C_RCV:
+                if (buf[0]==BCC){
+                    state=BCC_OK;
+                    printf("BCC_OK\n");
+                }
+                else if(buf[0]==F){
+                    state=FLAG_RCV;
+                    printf("c go back\n");
+                }
+                else {
+                    state=START;
+                    printf("start\n");
+                } break;
+            case BCC_OK:
+                if(buf[0]==F){
+                    state=STOP;
+                    printf("stop\n");
+                }
+                else {
+                    state=START;
+                    printf("start\n");
+                } break;
+        }
+            */
+  //      if (buf[0]=='z') break;
+    //}
 
     /*
     O ciclo FOR e as instruções seguintes devem ser alterados de modo a respeitar
