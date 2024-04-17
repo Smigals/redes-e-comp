@@ -10,8 +10,16 @@
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
 #define FALSE 0
 #define TRUE 1
-
-volatile int STOP=FALSE;
+#define START 0
+#define FLAG_RCV 1
+#define A_RCV 2
+#define C_RCV 3
+#define BCC_OK 4
+#define STOP 5
+#define F 0x5c
+#define A 0x03
+#define C 0x08
+#define BCC A^C
 
 int main(int argc, char** argv)
 {
