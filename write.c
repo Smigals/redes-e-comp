@@ -77,85 +77,85 @@ int main(int argc, char** argv)
         buf[i] = 'a';
     }*/
    
-    unsigned char buf[5] ={0x5c, 0x03, 0x08, 0x03^0x08, 0x5c};
-    res = write(fd,buf,5);
+    unsigned char buf[9] ={0x5c, 0x03, 0x08, 0x03^0x08, 0x08, 0xa0, 0x00, (0x08^0xa0)^0x00,0x5c};
+    res = write(fd,buf,9);
     printf("%d ", res);
-    for(int i=0; i<5;i++){
+    for(int i=0; i<9;i++){
         printf("%02X ", buf[i]);
     }
-     
+    
     /*testing*/    
 
     printf("\n%d bytes written\n", res);
-  //while (state!=STOP) {       /* loop for input */
-      // unsigned char buf[1];
-       //res = read(fd,buf,1);   /* returns after 5 chars have been input */
-       // buf[res]=0;               /* so we can printf... */
-       /*printf("%02X \n", buf[0]);
+    
+    while (state!=STOP) {       /* loop for input */
+      unsigned char buf2[1];
+       res = read(fd,buf2,1);   /* returns after 5 chars have been input */
+       buf2[res]=0;               /* so we can printf... */
+       
         
        switch(state){
             case START:
-                if (buf[0] == F){
+                if (buf2[0] == F){
                     state=FLAG_RCV;
-                    printf("flag_rcv\n");
+                    printf("F=%02x\n", buf2[0]);
                 }
                 else {
                     state=START;
-                    printf("start\n");
+                    //printf("F=%02x\n", buf2[0]);
                 } break;
             case FLAG_RCV:
-                if (buf[0] == A){
+                if (buf2[0] == A){
                     state=A_RCV; 
-                    printf("a_rcv\n") ;      
+                    printf("A=%02x\n", buf2[0]);      
                 }
-                else if(buf[0]==F){
+                else if(buf2[0]==F){
                     state=FLAG_RCV;
-                    printf("flag go back\n");
+                    printf("A=%02x\n", buf2[0]);
                 }
                 else {
                     state=START;
-                    printf("start\n");
+                    printf("A=%02x\n", buf2[0]);
                 } break;
             case A_RCV:
-                if (buf[0]==C){
+                if (buf2[0]==C){
                     state=C_RCV;
-                    printf("c_rcv\n");
+                    printf("C=%02x\n", buf2[0]);
                 }
-                else if(buf[0]==F){
+                else if(buf2[0]==F){
                     state=FLAG_RCV;
-                    printf("a go back\n");
+                    printf("C=%02x\n", buf2[0]);
                 }
                 else {
                     state=START;
-                    printf("start\n");
+                    printf("C=%02x\n", buf2[0]);
                 } break;
             case C_RCV:
-                if (buf[0]==BCC){
-                    state=BCC_OK;
-                    printf("BCC_OK\n");
+                if (buf2[0]==BCC){
+                    state=BCC1_OK;
+                    printf("BCC=%02x\n", buf2[0]);
                 }
-                else if(buf[0]==F){
+                else if(buf2[0]==F){
                     state=FLAG_RCV;
-                    printf("c go back\n");
+                    printf("BCC=%02x\n", buf2[0]);
                 }
                 else {
                     state=START;
-                    printf("start\n");
+                    printf("BCC=%02x\n", buf2[0]);
                 } break;
-            case BCC_OK:
-                if(buf[0]==F){
+            case BCC1_OK:
+                if(buf2[0]==F){
                     state=STOP;
-                    printf("stop\n");
+                    printf("FLAG=%02x\n", buf2[0]);
                 }
                 else {
                     state=START;
-                    printf("start\n");
+                    printf("FLAG=%02x\n", buf2[0]);
                 } break;
         }
-            */
-  //      if (buf[0]=='z') break;
-    //}
-
+        
+    }
+   
     /*
     O ciclo FOR e as instruções seguintes devem ser alterados de modo a respeitar
     o indicado no guião
