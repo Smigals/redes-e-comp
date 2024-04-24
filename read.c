@@ -143,10 +143,12 @@ int main(int argc, char** argv)
             
   //      if (buf[0]=='z') break;
     }
-
- 
-
-
+    unsigned char buf2[5]={0x5c, 0x01, 0x06, 0x01^0x06, 0x5c};
+    res=write(fd, buf2, 5);
+    printf("\n\n%d\n", res);
+    for(int i=0; i<5; i++) {
+        printf("%02x\n", buf2[i]);
+    }
 
     /*
     O ciclo WHILE deve ser alterado de modo a respeitar o indicado no guião
