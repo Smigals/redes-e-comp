@@ -19,7 +19,16 @@
 #define F 0x5c
 #define A 0x03
 #define C 0x08
-#define BCC A^C
+#define BCC1 A^C
+#define SET 0x08
+#define UA  0x06
+#define RR0 0x01
+#define RR1 0x11
+#define REJ0    0x05
+#define REJ1    0x15
+#define I0  0x80
+#define I1  0xc0
+#define DISC    0x0a
 
 int main(int argc, char** argv)
 {
@@ -76,7 +85,7 @@ int main(int argc, char** argv)
     printf("New termios structure set\n");
 
     while (state!=STOP) {       /* loop for input */
-       unsigned char buf[1];
+       unsigned char buf[100];
        res = read(fd,buf,1);   /* returns after 5 chars have been input */
        // buf[res]=0;               /* so we can printf... */
        printf("%02X \n", buf[0]);
@@ -85,60 +94,80 @@ int main(int argc, char** argv)
             case START:
                 if (buf[0] == F){
                     state=FLAG_RCV;
-                    printf("flag_rcv\n");
+                   
                 }
                 else {
                     state=START;
-                    printf("start\n");
+                    
                 } break;
             case FLAG_RCV:
                 if (buf[0] == A){
                     state=A_RCV; 
-                    printf("a_rcv\n") ;      
+                        
                 }
                 else if(buf[0]==F){
                     state=FLAG_RCV;
-                    printf("flag go back\n");
+                    
                 }
                 else {
                     state=START;
-                    printf("start\n");
+                    
                 } break;
             case A_RCV:
-                if (buf[0]==C){
-                    state=C_RCV;
-                    printf("c_rcv\n");
+                if (buf[0]==SET){
+                    state=C_RCV_SET;
+                    BCC1=A^SET;
+                    
+                }
+                else if(buf[0]==DISC){
+                    state=C_RCV_DISC;
+                    BCC1=A^DISC;
+                    
+                }
+                else if(buf[0]==I0){
+                    state=C_RCV_I0;
+                    BCC1=A^I0;
+                    
+                }
+                else if(buf[0]==I1){
+                    state=C_RCV_I1;
+                    BCC1=A^I1;
+                } 
+                else if(buf[0]==UA){
+                    state=C_RCV_UA;
+                    BCC1=A^UA;
+                }  
+                else if(buf[0]==F){
+                    state=FLAG_RCV;
+                   
+                }   
+                else {
+                    state=START;
+                } break;
+
+            case (C_RCV_SET || C_RCV_DISC || C_RCV_UA):
+                if(buf[0]==BCC1){
+                    state=BCC1_OK;
+                    
                 }
                 else if(buf[0]==F){
                     state=FLAG_RCV;
-                    printf("a go back\n");
-                }
+                }               
                 else {
                     state=START;
-                    printf("start\n");
+          
                 } break;
-            case C_RCV:
-                if (buf[0]==BCC){
-                    state=BCC_OK;
-                    printf("BCC_OK\n");
-                }
-                else if(buf[0]==F){
-                    state=FLAG_RCV;
-                    printf("c go back\n");
-                }
-                else {
-                    state=START;
-                    printf("start\n");
-                } break;
-            case BCC_OK:
-                if(buf[0]==F){
+            case BCC1_OK:
+                if (buf[0]==F){
                     state=STOP;
-                    printf("stop\n");
+                   
                 }
                 else {
                     state=START;
-                    printf("start\n");
+                   
                 } break;
+            case C_RCV_I0:
+                if(buf[0]==
         }
             
   //      if (buf[0]=='z') break;
@@ -148,6 +177,8 @@ int main(int argc, char** argv)
     printf("\n\n%d\n", res);
     for(int i=0; i<5; i++) {
         printf("%02x\n", buf2[i]);
+    
+
     }
 
     /*
