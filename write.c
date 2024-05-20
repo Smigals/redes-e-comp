@@ -11,7 +11,23 @@
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
 #define FALSE 0
 #define TRUE 1
-
+#define START 0
+#define FLAG_RCV 1
+#define A_RCV 2
+#define C_RCV 3
+#define BCC_OK 4
+#define STOP 5
+#define F 0x5c
+#define A 0x01
+#define SET 0x08
+#define UA  0x06
+#define RR0 0x01
+#define RR1 0x11
+#define REJ0    0x05
+#define REJ1    0x15
+#define I0  0x80
+#define I1  0xc0
+#define DISC    0x0a
 volatile int STOP=FALSE;
 
 int main(int argc, char** argv)
@@ -77,10 +93,10 @@ int main(int argc, char** argv)
         buf[i] = 'a';
     }*/
    
-    unsigned char buf[9] ={0x5c, 0x03, 0x08, 0x03^0x08, 0x08, 0xa0, 0x00, (0x08^0xa0)^0x00,0x5c};
-    res = write(fd,buf,9);
+    unsigned char buf[5] ={0x5c, 0x03, 0x08, 0x03^0x08,0x5c};
+    res = write(fd,buf,5);
     printf("%d ", res);
-    for(int i=0; i<9;i++){
+    for(int i=0; i<5;i++){
         printf("%02X ", buf[i]);
     }
     
@@ -160,7 +176,15 @@ int main(int argc, char** argv)
     O ciclo FOR e as instruções seguintes devem ser alterados de modo a respeitar
     o indicado no guião
     */
-    
+    unsigned char buf[10] ={0x5c, 0x03, 0x80, 0x03^0x80, 0x9b, 0x61, 0xa1, 0xff, ((0x9b^0x61)^0xa1)^0xff,0x5c};
+    res = write(fd,buf,10);
+    printf("%d ", res);
+    for(int i=0; i<10;i++){
+        printf("%02X ", buf[i]);
+    }
+    state=START;
+
+
     sleep(1);
     
     if ( tcsetattr(fd,TCSANOW,&oldtio) == -1) {

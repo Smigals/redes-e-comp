@@ -14,12 +14,14 @@
 #define FLAG_RCV 1
 #define A_RCV 2
 #define C_RCV 3
-#define BCC_OK 4
+#define BCC1_OK 4
 #define STOP 5
+#define C_RCV_I0 6
+#define C_RCV_I1 7
+#define DADOS 8
+#define BCC2_OK 9
 #define F 0x5c
 #define A 0x03
-#define C 0x08
-#define BCC1 A^C
 #define SET 0x08
 #define UA  0x06
 #define RR0 0x01
@@ -83,7 +85,8 @@ int main(int argc, char** argv)
     }
 
     printf("New termios structure set\n");
-
+    //Máquina de estados recetor Open//
+    char BCC1
     while (state!=STOP) {       /* loop for input */
        unsigned char buf[100];
        res = read(fd,buf,1);   /* returns after 5 chars have been input */
@@ -119,7 +122,7 @@ int main(int argc, char** argv)
                     BCC1=A^SET;
                     
                 }
-                else if(buf[0]==DISC){
+                /*else if(buf[0]==DISC){
                     state=C_RCV_DISC;
                     BCC1=A^DISC;
                     
@@ -136,7 +139,7 @@ int main(int argc, char** argv)
                 else if(buf[0]==UA){
                     state=C_RCV_UA;
                     BCC1=A^UA;
-                }  
+                } */ 
                 else if(buf[0]==F){
                     state=FLAG_RCV;
                    
@@ -145,7 +148,7 @@ int main(int argc, char** argv)
                     state=START;
                 } break;
 
-            case (C_RCV_SET || C_RCV_DISC || C_RCV_UA):
+            case (C_RCV_SET /*|| C_RCV_DISC || C_RCV_UA*/):
                 if(buf[0]==BCC1){
                     state=BCC1_OK;
                     
@@ -166,12 +169,9 @@ int main(int argc, char** argv)
                     state=START;
                    
                 } break;
-            case C_RCV_I0:
-                if(buf[0]==
         }
-            
-  //      if (buf[0]=='z') break;
     }
+
     unsigned char buf2[5]={0x5c, 0x01, 0x06, 0x01^0x06, 0x5c};
     res=write(fd, buf2, 5);
     printf("\n\n%d\n", res);
@@ -181,6 +181,114 @@ int main(int argc, char** argv)
 
     }
 
+    state=START;
+    while (state!=STOP) {       /* loop for input */
+       unsigned char buf[100];
+       res = read(fd,buf,1);   /* returns after 5 chars have been input */
+       // buf[res]=0;               /* so we can printf... */
+       printf("%02X \n", buf[0]);
+        int RespostaR=0;
+        char armazem;
+        switch(state){
+            case START:
+                if (buf[0] == F){
+                    state=FLAG_RCV;
+                   
+                }
+                else {
+                    state=START;
+                    
+                } break;
+            case FLAG_RCV:
+                if (buf[0] == A){
+                    state=A_RCV; 
+                        
+                }
+                else if(buf[0]==F){
+                    state=FLAG_RCV;
+                    
+                }
+                else {
+                    state=START;
+                    
+                } break;
+            case A_RCV:
+                /*if (buf[0]==SET){
+                    state=C_RCV_SET;
+                    BCC1=A^SET;
+                    
+                }
+                else if(buf[0]==DISC){
+                    state=C_RCV_DISC;
+                    BCC1=A^DISC;
+                    
+                }
+                */else if(buf[0]==I0){
+                    state=C_RCV_I0;
+                    BCC1=A^I0;
+                    RespostaR=1;
+                }
+                else if(buf[0]==I1){
+                    state=C_RCV_I1;
+                    BCC1=A^I1;
+                    RespostaR=0;
+                } 
+                /*else if(buf[0]==UA){
+                    state=C_RCV_UA;
+                    BCC1=A^UA;
+                } */ 
+                else if(buf[0]==F){
+                    state=FLAG_RCV;
+                   
+                }   
+                else {
+                    state=START;
+                } break;
+
+            case (C_RCV_I0):
+                if(buf[0]==BCC1){
+                    state=BCC1_OK;
+                    
+                }
+                else if(buf[0]==F){
+                    state=FLAG_RCV;
+                }               
+                else {
+                    state=START;
+          
+                } break;
+            case (C_RCV_I1):
+                if(buf[0]==BCC1){
+                    state=BCC1_OK;
+                    
+                }
+                else if(buf[0]==F){
+                    state=FLAG_RCV;
+                }               
+                else {
+                    state=START;
+          
+                } break;
+            case BCC1_OK:
+                if (buf[0]==F){
+                    //FAZER BYTESTUFING
+
+                }
+                else if()//caso detete BCC2 e vá para o BCC2_OK
+                else {
+                    state=BCC1_OK;
+                    //fazer xores com valores anteriores
+                } break;
+            case BCC2_OK:
+                if (buf[0]==F)
+                {
+                    state = STOP;
+                }
+                else{
+                    state=START;
+                }
+        }
+    }
     /*
     O ciclo WHILE deve ser alterado de modo a respeitar o indicado no guião
     */
